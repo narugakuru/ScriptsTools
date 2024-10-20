@@ -1,0 +1,4 @@
+add: 0
+work_path: D:/WorkSpace/NADJ20007
+db_url: postgresql+psycopg2://postgres:rootroot@localhost:5432/postgres?options=-csearch_path=takusai_tanntai
+sqlite_db_path: E:/CodeAchieve/MyFluent/ItTools/rule.db

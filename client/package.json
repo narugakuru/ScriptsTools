@@ -1,0 +1,40 @@
+{
+  "name": "element-plus-vite-starter",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "generate": "vite-ssg build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.7",
+    "element-plus": "^2.8.5",
+    "vue": "^3.4.21",
+    "vue-native-websocket-vue3": "^3.1.7",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@iconify-json/ep": "^1.1.15",
+    "@types/node": "^20.11.30",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "eslint": "^9.13.0",
+    "eslint-plugin-vue": "^9.29.0",
+    "globals": "^15.11.0",
+    "less": "^4.2.0",
+    "sass": "^1.72.0",
+    "typescript": "^5.4.3",
+    "typescript-eslint": "^8.10.0",
+    "unocss": "^0.58.9",
+    "unplugin-auto-import": "^0.18.3",
+    "unplugin-vue-components": "^0.26.0",
+    "vite": "^5.2.5",
+    "vite-ssg": "^0.23.6",
+    "vue-tsc": "^2.0.7"
+  },
+  "license": "MIT"
+}
