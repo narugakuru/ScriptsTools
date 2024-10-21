@@ -1,12 +1,12 @@
 from fastapi import APIRouter,Depends
 from fastapi.responses import StreamingResponse
-from server.controller.app_logger import setup_stream_logger
+from server.componnet.app_logger import setup_stream_logger
 import asyncio
 
 router = APIRouter()
 
 # 初始化日志记录器
-logger = setup_stream_logger(Depends(asyncio.Queue()))
+# logger = setup_stream_logger(Depends(asyncio.Queue()))
 
 """ # SSE 端点，用于流式传输日志
 @router.get("/stream")
@@ -19,7 +19,7 @@ async def stream_logs():
             
     return StreamingResponse(log_generator(), media_type="text/event-stream")
  """
-@router.get("/hello")
-async def root():
-    logger.info("收到根目录请求")
-    return {"message": "Hello World!"}
+# @router.get("/hello")
+# async def root():
+#     logger.info("收到根目录请求")
+#     return {"message": "Hello World!"}

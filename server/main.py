@@ -6,7 +6,7 @@ from server.controller.file_controller import router as file_control_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, FileResponse
 from fastapi import FastAPI, WebSocket, BackgroundTasks, Depends
-from server.controller.app_logger import (
+from server.componnet.app_logger import (
     setup_logger,
     setup_stream_logger,
     get_new_log_queue,

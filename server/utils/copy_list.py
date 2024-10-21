@@ -2,6 +2,7 @@
 import os
 import shutil
 import tqdm
+from  server.componnet.app_logger import *
 
 origin_path = r"Z:\ssl-htdocs"
 copy_path = r"E:\WorkSpace\WebKaisyu\html_1016_1"
@@ -34,8 +35,10 @@ def normalize_paths(raw_paths):
 # Function to copy files and recreate folder structure
 def copy_files_with_structure(origin_path, copy_path, file_list):
     
-    file_list = normalize_paths(file_list)
+    logger = setup_stream_logger(logger_name="copy_list")
+    logger.info("======copy_files_with_structure=======")
     
+    file_list = normalize_paths(file_list)
     print(f'copy folder from {origin_path} to {copy_path}')
     
     os.makedirs(os.path.dirname(copy_path), exist_ok=True)
@@ -57,9 +60,9 @@ def copy_files_with_structure(origin_path, copy_path, file_list):
             
             # Copy the file to the target location
             shutil.copy2(source, target)
-            print(f"\nCopied: {source} -> {target}")
+            logger.info(f"\nCopied: {source} -> {target}")
         else:
-            print(f"\nSkipped: {source} (Not a file)")
+            logger.info(f"\nSkipped: {source} (Not a file)")
 
 
 if __name__ == "__main__":

@@ -20,6 +20,9 @@ const pathSrc = path.resolve(__dirname, 'src')
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/static/', // 资源路径前缀
+  build: {
+    outDir: 'dist/static',
+  },
   resolve: {
     alias: {
       '~/': `${pathSrc}/`,

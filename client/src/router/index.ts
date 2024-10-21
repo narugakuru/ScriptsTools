@@ -19,7 +19,7 @@ const routes = [
       },
       {
         path: '/welcome',
-        name: 'welcome',
+        name: 'welcome',  
         component: () => import('../view/WelcomeView.vue'),
       },
       {

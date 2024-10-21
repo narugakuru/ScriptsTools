@@ -6,6 +6,7 @@ import router from './router'; // 引入路由
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'  // 引入Element Plus icon 所需
 import './assets/main.css'
 import axios from './axios'; // 引入自定义的 Axios 实例
+import 'uno.css'
 
 const app = createApp(App)
 

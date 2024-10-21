@@ -1,4 +1,3 @@
-import webview
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import os
@@ -39,11 +38,6 @@ if __name__ == "__main__":
     monitor_directory = f'{base_path}/server'
     observer.schedule(event_handler, path=monitor_directory, recursive=True)
     observer.start()
-
-    # PyWebView启动桌面应用窗口，嵌入FastAPI前端
-    webview.create_window("WebViewTools", "http://127.0.0.1:8000/index.html", frameless=False, easy_drag=True)
-    logo = "E:\CodeAchieve\MyFluent\itTools-fastapi\logo.png"
-    webview.start(icon=logo, debug=False)
 
     try:
         while True:

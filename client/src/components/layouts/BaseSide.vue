@@ -1,41 +1,39 @@
 <script lang="ts" setup>
 
 import { isCollapse } from './layouts'
+import { ref } from 'vue';
 
+const menuItems = ref([
+  { index: '/welcome', icon: 'setting', label: '比对复制文件夹' },
+  { index: '/updateList', icon: 'setting', label: '批量复制文件列表' },
+  { index: '/logs', icon: 'document', label: '日志' }
+]);
 
 </script>
+
 
 <template>
   <el-aside width="200px">
     <router-link to="/">
       <h1>Home</h1>
     </router-link>
+
     <el-scrollbar max-height="800">
+
       <el-menu router default-active="1" unique-opened :collapse="isCollapse">
-        <el-menu-item index="/welcome">
-          <el-icon>
-            <setting />
-          </el-icon>
-          <!-- <router-link to="/">比对复制文件夹</router-link> -->
-          <span>比对复制文件夹</span>
-        </el-menu-item>
-        <el-menu-item index="/updateList">
-          <el-icon>
-            <setting />
-          </el-icon>
-          <!-- <router-link to="/welcome">批量复制文件列表</router-link> -->
-          <span>批量复制文件列表</span>
-        </el-menu-item>
-        <el-menu-item index="/logs">
-          <el-icon>
-            <document />
-          </el-icon>
-          <!-- <router-link to="/logs">日志</router-link> -->
-          <span>日志</span>
-        </el-menu-item>
+        
+        <template v-for="item in menuItems" :key="item.index">
+          <el-menu-item :index="item.index">
+            <el-icon>
+              <component :is="item.icon" />
+            </el-icon>
+            <span>{{ item.label }}</span>
+          </el-menu-item>
+        </template>
 
       </el-menu>
     </el-scrollbar>
+
   </el-aside>
 </template>
 

@@ -2,7 +2,22 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
-from fastapi import Depends
+from typing import Dict
+
+class QueueManager:
+    def __init__(self):
+        self.queues: Dict[str, asyncio.Queue] = {}
+
+    def get_queue(self, name: str) -> asyncio.Queue:
+        if name not in self.queues:
+            self.queues[name] = asyncio.Queue()
+        return self.queues[name]
+
+    def remove_queue(self, name: str):
+        if name in self.queues:
+            del self.queues[name]
+
+queue_manager = QueueManager()
 
 # 不再是全局队列，而是动态创建
 def get_new_log_queue():
@@ -17,8 +32,8 @@ class QueueHandler(logging.Handler):
         self.queue = queue
 
     def emit(self, record):
-        log_entry = self.format(record)
         try:
+            log_entry = self.format(record)  # 确保日志记录被正确格式化
             self.queue.put_nowait(log_entry)
         except asyncio.QueueFull:
             pass
@@ -47,17 +62,19 @@ def setup_logger(logger_name="app"):
         logger.addHandler(file_handler)
     return logger
 
-def setup_stream_logger(log_queue: asyncio.Queue, logger_name="stream"):
-    logger = logging.getLogger(logger_name)
-  
-    # Remove all previous handlers
-    for handler in logger.handlers[:]:
-        if isinstance(handler, QueueHandler):
-            logger.removeHandler(handler)
-  
-    # Set new queue handler
-    queue_handler = QueueHandler(log_queue)
-    queue_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-    logger.addHandler(queue_handler)
 
+
+def setup_stream_logger(logger_name="stream"):
+    logger = logging.getLogger(logger_name)
+
+    if not logger.hasHandlers():
+        # Get or create queue from QueueManager
+        log_queue = queue_manager.get_queue(logger_name)
+        # Set new queue handler
+        queue_handler = QueueHandler(log_queue)
+        queue_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+        logger.addHandler(queue_handler)
+        logger.setLevel(logging.INFO)  # 确保日志级别设置为DEBUG以捕获所有日志
+        logger.info("Setting up stream logger")
+    
     return logger
