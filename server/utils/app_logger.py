@@ -75,7 +75,8 @@ def setup_stream_logger(logger_name):
         print(f'自动获取脚本logger名称：======== {logger_name} =========')
 
     logger = logging.getLogger(logger_name)
-
+    print(f'指定获取脚本logger名称：======== {logger_name} =========')
+    
     if not logger.hasHandlers():
         # Get or create queue from QueueManager
         log_queue = queue_manager.get_queue(logger_name)
@@ -94,15 +95,6 @@ def setup_stream_logger(logger_name):
         logger.addHandler(console_handler)
 
         logger.setLevel(logging.INFO)  # 确保日志级别设置为DEBUG以捕获所有日志
-        logger.info("Setting up stream logger")
+        logger.info(f"Setting up stream logger: {logger_name}")
 
     return logger
-
-
-def inject_logger(func):
-    def wrapper(*args, **kwargs):
-        script_name = os.path.basename(__file__).split('.')[0]
-        logger = setup_stream_logger(script_name)
-        kwargs['logger'] = logger
-        return func(*args, **kwargs)
-    return wrapper

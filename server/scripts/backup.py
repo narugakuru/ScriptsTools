@@ -66,3 +66,18 @@ def backup_file_or_folder(path):
     except Exception as e:
         print(f"备份失败: {e}")
         return False
+
+
+async def run(script_name, params):
+    """
+    脚本入口函数
+    参数通过关键字参数传入
+    """
+    try:
+        # 设置全局变量 logger
+        global logger
+        logger = logging.getLogger(script_name)
+        backup_file_or_folder(**params)
+        return True
+    except Exception as e:
+        return str(e)

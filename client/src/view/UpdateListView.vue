@@ -54,9 +54,9 @@ common2/tmp/footer.php` // 默认值，需要换行符'\n'
                 const response = await axios.post('/run_script/copy_list', payload);
 
                 const { code, message, data } = response.data;
-
+                console.log(code, message, data)
                 // 显示响应结果为弹窗
-                ElMessageBox.alert(`Code: ${code}\nMessage: ${message}\nData: ${JSON.stringify(data)}`, 'Response', {
+                ElMessageBox.alert(`${JSON.stringify(data)}`, 'Response', {
                     confirmButtonText: '关闭',
                     callback: (action) => {
                         ElMessage({
@@ -67,7 +67,7 @@ common2/tmp/footer.php` // 默认值，需要换行符'\n'
                 });
             } catch (error) {
                 console.error('执行任务失败:', error);
-                ElMessageBox.alert('执行任务失败', '错误', {
+                ElMessageBox.alert('执行任务失败\nCode: ${code}\nMessage: ${message}\nData: ${JSON.stringify(data)}', '错误', {
                     confirmButtonText: '关闭',
                     callback: (action) => {
                         ElMessage({

@@ -12,3 +12,9 @@ def create_standard_response(code: int, message: str, data: Optional[Any] = None
 
 def success_response(data: Optional[Any] = None):
     return create_standard_response(200, "Success", data)
+
+
+def failure_response(
+    code: int = 400, message: str = "Failure", data: Optional[Any] = None
+):
+    return create_standard_response(code, message, data)
