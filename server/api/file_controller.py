@@ -1,12 +1,11 @@
 from email import message
-from venv import logger
 from fastapi import APIRouter
 
-from server.controller.result import success_response
-from ..utils.copy_folder_rule import copy_folders
-from ..utils.copy_list import copy_files_with_structure
+from server.api.result import success_response
+from ..scripts.copy_folder_rule import copy_folders
+from ..scripts.copy_list import copy_files_with_structure
 from pydantic import BaseModel
-from server.componnet.app_logger import *
+from server.utils.app_logger import *
 import json  # 导入 json 模块
     
 class ResponseModel(BaseModel):

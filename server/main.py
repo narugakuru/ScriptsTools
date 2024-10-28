@@ -1,16 +1,17 @@
 import sys, os, asyncio
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from server.controller.log_controller import router as log_controller_router
-from server.controller.file_controller import router as file_control_router
+from server.api.file_controller import router as file_control_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, FileResponse
 from fastapi import FastAPI, WebSocket, BackgroundTasks, Depends
-from server.componnet.app_logger import (
+from server.utils.app_logger import (
     setup_logger,
     setup_stream_logger,
     get_new_log_queue,
 )
+from server.api import execute_script, script_routes
+from contextlib import asynccontextmanager
 
 
 # 获取当前目录
@@ -40,12 +41,7 @@ app.mount("/static", StaticFiles(directory=web_path, html=True), name="static")
 
 # 注册不同的路由模块，没有变化
 app.include_router(file_control_router, prefix="/file")
-
-
-# 定义 API 路由，这里无需修改，因为根路径已经修改
-@app.get("/items")
-async def read_items():
-    return {"items": ["item1", "item2", "item3"]}
+app.include_router(script_routes.router, prefix="/run_script")
 
 
 # Vue 前端路由处理，调整路径, web_path是client/dist目录
@@ -58,16 +54,6 @@ async def serve_frontend(full_path: str):
 @app.get("/index")
 async def index():
     return FileResponse(os.path.join(web_path, "index.html"))
-
-
-@app.get("/logs")
-async def streamLogs():
-    return {"message": "hello world"}
-
-
-@app.get("/api/logs")
-async def streamLogs():
-    return {"message": "hello world"}
 
 
 @app.get("/produce_logs/")

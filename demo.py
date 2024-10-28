@@ -1,15 +1,26 @@
-import asyncio
+import requests
 
-async def fetch_data(n):
-    print(f"Start fetching {n}")
-    await asyncio.sleep(2)  # 模拟网络请求
-    print(f"Finished fetching {n}")
-    return f"Data {n}"
+url = "http://127.0.0.1:8000/run_script/test_script"
+params = {
+    "origin_path": "Z:\\ssl-htdocs",
+    "copy_path": "E:\\WorkSpace\\WebKaisyu\\html_1024",
+    "file_list": [
+        "common/css/common.css",
+        "jbaudit/target/02.html",
+        "jbaudit/target/04.html",
+        "jbaudit/target/05.html",
+        "jbaudit/target/06.html",
+        "effort/flow.html",
+        "effort/operation/index.html",
+        "/pr/kensa/activity/demand_r04_02.html",
+        "common2/css/english.css",
+        "english/index.html",
+        "english/template/footer.php",
+        "common/template/footer.php",
+        "common2/tmp/footer.php",
+        "common2/css/basic.css"
+    ]
+}
 
-async def main():
-    # 并发执行三个 fetch_data 任务
-    tasks = [fetch_data(1), fetch_data(2), fetch_data(3)]
-    results = await asyncio.gather(*tasks)
-    print(results)
-
-asyncio.run(main())
+response = requests.post(url, json=params)
+print(response.json())

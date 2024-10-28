@@ -1,7 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from server.componnet.app_logger import setup_logger  # 假设你有一个单独的日志配置模块
+from server.utils.app_logger import setup_logger  # 假设你有一个单独的日志配置模块
 
 # 初始化日志记录器
 logger = setup_logger()

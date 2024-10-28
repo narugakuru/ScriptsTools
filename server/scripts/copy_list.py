@@ -2,20 +2,30 @@
 import os
 import shutil
 import tqdm
-from  server.componnet.app_logger import *
+from  server.utils.app_logger import *
+from . import *
+from  server.api.result import success_response
 
-origin_path = r"Z:\ssl-htdocs"
-copy_path = r"E:\WorkSpace\WebKaisyu\html_1016_1"
+
+origin_path = r"E:\WorkSpace\WebKaisyu\ssl-htdocs-local"
+copy_path = r"E:\WorkSpace\WebKaisyu\html_1024"
 
 # String of file paths (could be from a file or input)
 file_list = r"""
-recruit/msg01.html
-recruit/way.html
-recruit/carrerPath.html
-recruit/training.html
-recruit/other.html
+common\css\common.css
+jbaudit\target\02.html
+jbaudit\target\04.html
+jbaudit\target\05.html
+jbaudit\target\06.html
+effort\flow.html
+effort\operation\index.html
+/pr/kensa/activity/demand_r04_02.html
+common2\css\english.css
+english\index.html
+english\template\footer.php
 common\template\footer.php
-common2/tmp/footer.php
+common2\tmp\footer.php
+common2\css\basic.css
 """
 
 # Function to normalize paths
@@ -35,10 +45,13 @@ def normalize_paths(raw_paths):
 # Function to copy files and recreate folder structure
 def copy_files_with_structure(origin_path, copy_path, file_list):
     
-    logger = setup_stream_logger(logger_name="copy_list")
+    logger = logger_init()
     logger.info("======copy_files_with_structure=======")
     
-    file_list = normalize_paths(file_list)
+    if file_list is str:
+        logger.info("file_list is normalizing!!!")
+        file_list = normalize_paths(file_list)
+        
     print(f'copy folder from {origin_path} to {copy_path}')
     
     os.makedirs(os.path.dirname(copy_path), exist_ok=True)
@@ -68,3 +81,15 @@ def copy_files_with_structure(origin_path, copy_path, file_list):
 if __name__ == "__main__":
     # Run the function to copy files
     copy_files_with_structure(origin_path, copy_path, file_list)
+
+async def run(origin_path: str, copy_path: str, file_list):
+    """
+    脚本入口函数
+    参数通过关键字参数传入
+    """
+    try:
+        copy_files_with_structure(origin_path, copy_path, file_list)
+        return success_response("Files copied successfully")
+        # return {"result": "success", "message": "Files copied successfully"}
+    except Exception as e:
+        return {"result": "error", "message": str(e)}

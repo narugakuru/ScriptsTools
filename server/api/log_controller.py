@@ -1,7 +1,6 @@
 from fastapi import APIRouter,Depends
 from fastapi.responses import StreamingResponse
-from server.componnet.app_logger import setup_stream_logger
-import asyncio
+from server.utils.app_logger import setup_stream_logger
 
 router = APIRouter()
 

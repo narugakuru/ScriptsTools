@@ -124,7 +124,7 @@ if __name__ == "__main__":
     setup_logging(log_file_path)
 
     exclude_exts = ['.pdf', '.PDF']  # 排除的文件扩展名
-    exclude_dirs = ['.git', 'pdf']  # 排除的文件夹
+    exclude_dirs = ['.git', 'pdf' ,'img']  # 排除的文件夹
     include_dirs = ['recruit']  # 仅包含的文件夹
 
     # 使用排除目录方式

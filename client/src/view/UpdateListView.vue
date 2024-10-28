@@ -51,7 +51,7 @@ common2/tmp/footer.php` // 默认值，需要换行符'\n'
             };
 
             try {
-                const response = await axios.post('/file/copy_list', payload);
+                const response = await axios.post('/run_script/copy_list', payload);
 
                 const { code, message, data } = response.data;
 
