@@ -45,9 +45,16 @@ export default {
     data() {
         return {
             script_name: 'copy_list',
-            origin_path: 'Z:/ssl-htdocs',
-            copy_path: 'E:/WorkSpace/WebKaisyu/html_1020',
-            file_list: `recruit/msg01.html\nrecruit/way.html`,
+            // origin_path: 'Z:/ssl-htdocs',
+            origin_path: 'E:/WorkSpace/WebKaisyu/ssl-htdocs-local',
+            copy_path: 'E:/WorkSpace/WebKaisyu/html_10114',
+            // file_list: `recruit/msg01.html\nrecruit/way.html`,
+            file_list: `effort/content.html
+effort/reflect01.html
+effort/reflect02.html
+effort/exam/report.html
+common/css/common.css
+`,
             logContent: '',  // 初始化日志内容
             isConnected: false,
             isExecuting: false,
@@ -72,12 +79,22 @@ export default {
                 const response = await axios.post(`/script/${this.script_name}`, payload);
                 const { code, message, data } = response.data;
                 console.log(code, message, data)
+
                 // 显示响应结果为消息提醒
                 ElMessage({
                     message: `响应数据: ${JSON.stringify(data)}`,
                     type: 'success',
                     duration: 5000
                 });
+
+                // // 可以设置一个定时器，在特定时间后主动关闭连接
+                // setTimeout(() => {
+                //     if (this.socket.readyState === WebSocket.OPEN) {
+                //         console.log('主动关闭连接');
+                //         this.socket.close();
+                //     }
+                // }, 3000); // 10秒后关闭
+                                
             } catch (error) {
                 console.error('执行任务失败:', error);
                 ElMessage({
@@ -87,6 +104,7 @@ export default {
                 });
             } finally {
                 this.isRunning = false;  // 任务执行完毕，设置为未执行
+
             }
         },
         // 改进的WebSocket连接方法
@@ -133,7 +151,7 @@ export default {
         },
         
         clearLog() {
-        this.logContent = '';
+            this.logContent = '';
         }
 
     },
