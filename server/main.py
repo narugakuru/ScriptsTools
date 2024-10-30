@@ -4,11 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, FileResponse
 from fastapi import FastAPI, WebSocket, BackgroundTasks, Depends
-from server.utils.app_logger import (
-    setup_logger,
-    setup_stream_logger,
-    get_new_log_queue,
-)
+from server.utils.app_logger import *
 from server.api import script_routes
 from server.config import config
 
@@ -27,7 +23,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=config.web_path, html=True), name="static")
 
 # 注册不同的路由模块，没有变化
-app.include_router(script_routes.router, prefix="/run_script")
+app.include_router(script_routes.router, prefix="/script")
 
 
 # Vue 前端路由处理，调整路径, web_path是client/dist目录
@@ -39,19 +35,6 @@ async def serve_frontend(full_path: str):
 async def index():
     return FileResponse(os.path.join(config.web_path, "index.html"))
 
-# ws实时通信
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(
-    websocket: WebSocket, log_queue: asyncio.Queue = Depends(get_new_log_queue)
-):
-    await websocket.accept()
-    logger = setup_stream_logger(log_queue)
-    try:
-        while True:
-            log_entry = await log_queue.get()
-            await websocket.send_text(log_entry)
-    except Exception as e:
-        await websocket.close()
 
 
 if __name__ == "__main__":

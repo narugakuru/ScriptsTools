@@ -1,8 +1,9 @@
+# server/controller/my_logger.py
 import logging, os
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
 from typing import Dict
-from fastapi import WebSocket
+
 
 class QueueManager:
     def __init__(self):
@@ -17,12 +18,20 @@ class QueueManager:
         if name in self.queues:
             del self.queues[name]
 
+
 queue_manager = QueueManager()
+
+
+# 不再是全局队列，而是动态创建
+def get_new_log_queue():
+    return asyncio.Queue()
+
 
 class QueueHandler(logging.Handler):
     """
     日志处理器，将日志消息放入队列中
     """
+
     def __init__(self, queue):
         super().__init__()
         self.queue = queue
@@ -34,22 +43,6 @@ class QueueHandler(logging.Handler):
         except asyncio.QueueFull:
             pass
 
-class ScriptLogger:
-    def __init__(self, name):
-        self.name = name
-        self.queue = queue_manager.get_queue(name)
-        self.websocket = None
-
-    def set_websocket(self, websocket: WebSocket):
-        self.websocket = websocket
-
-    def remove_websocket(self):
-        self.websocket = None
-
-    def log(self, message: str):
-        self.queue.put_nowait(message)
-        if self.websocket:
-            asyncio.create_task(self.websocket.send_text(message))
 
 def setup_logger(logger_name="app"):
     logger = logging.getLogger(logger_name)
@@ -75,7 +68,11 @@ def setup_logger(logger_name="app"):
         logger.addHandler(file_handler)
     return logger
 
-def setup_stream_logger(logger_name="stream"):
+# logger_name="stream"
+def setup_stream_logger(logger_name):
+    if logger_name is None:
+        logger_name = os.path.basename(__file__).split(".")[0]
+        print(f'自动获取脚本logger名称：======== {logger_name} =========')
 
     logger = logging.getLogger(logger_name)
     print(f'指定获取脚本logger名称：======== {logger_name} =========')
