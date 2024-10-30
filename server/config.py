@@ -1,7 +1,5 @@
 import os, sys
 
-from dist.app._internal.setuptools.command.setopt import config_file
-
 class ConfigStatic:
     def __init__(self):
         # 获取当前目录

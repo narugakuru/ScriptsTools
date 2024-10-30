@@ -140,13 +140,16 @@ common2/tmp/footer.php`,
 
 
 
-
+<!-- 
 <style scoped>
-.log-container {
+el-form-item div.log-container {
+    width: 100%;
+    min-width: 300px;
     position: relative;
 }
 
 .log-area {
+    width: 100%;
     font-family: monospace;
     background-color: #1e1e1e;
     color: #d4d4d4;
@@ -154,6 +157,7 @@ common2/tmp/footer.php`,
 }
 
 .log-status {
+    width: 100%;
     position: absolute;
     top: 10px;
     right: 10px;
@@ -163,4 +167,4 @@ common2/tmp/footer.php`,
 :deep(.el-input__inner) {
     font-family: monospace !important;
 }
-</style>
+</style> -->

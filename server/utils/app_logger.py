@@ -4,6 +4,7 @@ import asyncio
 from typing import Dict
 from fastapi import WebSocket
 
+
 class QueueManager:
     def __init__(self):
         self.queues: Dict[str, asyncio.Queue] = {}
@@ -19,20 +20,39 @@ class QueueManager:
 
 queue_manager = QueueManager()
 
+
 class QueueHandler(logging.Handler):
     """
     日志处理器，将日志消息放入队列中
     """
-    def __init__(self, queue):
+    def __init__(self, queue: asyncio.Queue):
         super().__init__()
         self.queue = queue
 
     def emit(self, record):
         try:
-            log_entry = self.format(record)  # 确保日志记录被正确格式化
-            self.queue.put_nowait(log_entry)
+            self.queue.put_nowait(self.format(record))
         except asyncio.QueueFull:
             pass
+
+
+class WebSocketHandler(logging.Handler):
+    """
+    ws处理器，直接发送ws消息。
+    在ws接口实时添加ws处理器，用完即移除
+    """
+
+    def __init__(self, websocket):
+        super().__init__()
+        self.websocket = websocket
+
+    def emit(self, record):
+        try:
+            message = self.format(record)
+            asyncio.create_task(self.websocket.send_text(message))
+        except Exception:
+            self.handleError(record)
+
 
 class ScriptLogger:
     def __init__(self, name):
@@ -76,10 +96,10 @@ def setup_logger(logger_name="app"):
     return logger
 
 def setup_stream_logger(logger_name="stream"):
-
+    # logger_name=script_name
     logger = logging.getLogger(logger_name)
-    print(f'指定获取脚本logger名称：======== {logger_name} =========')
-    
+    print(f"======== 指定获取脚本logger名称：{logger_name} =========")
+
     if not logger.hasHandlers():
         # Get or create queue from QueueManager
         log_queue = queue_manager.get_queue(logger_name)
@@ -89,15 +109,16 @@ def setup_stream_logger(logger_name="stream"):
         logger.addHandler(queue_handler)
 
         # Add console handler for direct output
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
-        console_formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
-        console_handler.setFormatter(console_formatter)
-        logger.addHandler(console_handler)
+        # console_handler = logging.StreamHandler()
+        # console_handler.setLevel(logging.DEBUG)
+        # console_formatter = logging.Formatter(
+        #     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        # )
+        # console_handler.setFormatter(console_formatter)
+        # logger.addHandler(console_handler)
 
         logger.setLevel(logging.INFO)  # 确保日志级别设置为DEBUG以捕获所有日志
         logger.info(f"Setting up stream logger: {logger_name}")
+        print(f"====== 初始化日志Handler:  {logger_name} =======")
 
     return logger

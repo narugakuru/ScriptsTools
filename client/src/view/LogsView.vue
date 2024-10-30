@@ -5,7 +5,7 @@
         <!-- <LogsComponent apiPath="produce_logs" /> -->
     </div>
 </template>
-
+<!-- 
 <script>
 import LogsComponent from '~/components/LogsComponent.vue';
 
@@ -14,4 +14,4 @@ export default {
         LogsComponent
     }
 }
-</script>
+</script> -->

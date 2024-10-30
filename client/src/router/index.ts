@@ -10,7 +10,7 @@ const routes = [
     children: [
       {
         path: '/static',
-        redirect: '/index', // 默认重定向到 /index
+        redirect: '/updateList', // 默认重定向到 /index
       },
       {
         path: '/index',

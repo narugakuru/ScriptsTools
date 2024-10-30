@@ -5,14 +5,25 @@ import tqdm
 
 
 origin_path = r"Z:\ssl-htdocs"
-copy_path = r"E:\WorkSpace\WebKaisyu\html_1025"
+copy_path = r"E:\WorkSpace\WebKaisyu\html_1030"
 
 # String of file paths (could be from a file or input)
 file_list = r"""
-common2\img\index\about1.JPG
-img\jbaudit\history1.png
-img\jbaudit\history2.png
+index.html
 english\index.html
+common2\css\english.css
+recruit\index.html
+common\js\recruit.js
+common\css\recruit.css
+recruit\img\newindex\carrierpath.png
+recruit\img\newindex\kenshuseido.png
+recruit\img\newindex\work_life_balancePC.png
+recruit\katsute_ippan_kinmu.html
+recruit/way.html
+img\recruit\kyariapasu_image.png
+/img/recruit/jinji_panf_2024_29.png
+common2\js\index.js
+common2\css\index.css
 """
 
 # Function to normalize paths

@@ -32,7 +32,7 @@ def setup_logging(log_file_path):
 
 # 通用文件复制逻辑
 def copy_files(origin_path, copy_path, exclude_exts, exclude_dirs, include_dirs, all_copy, filter_func):
-    
+
     # 创建一个进度条用于遍历文件
     traversal_pbar = tqdm(desc="Traversing Files", unit="files", position=0)
     # 创建另一个进度条用于处理文件
@@ -52,7 +52,7 @@ def copy_files(origin_path, copy_path, exclude_exts, exclude_dirs, include_dirs,
 
         # 复制文件，排除指定扩展名的文件
         for file in files:
-            
+
             traversal_pbar.update(1)  # 每处理一个文件更新一次进度条
             if not any(file.lower().endswith(ext) for ext in exclude_exts):
                 source_file = os.path.join(root, file)
@@ -61,16 +61,14 @@ def copy_files(origin_path, copy_path, exclude_exts, exclude_dirs, include_dirs,
                 if should_copy(source_file, target_file) or all_copy:
                     # all_copy=True 直接执行更新
                     shutil.copy2(source_file, target_file)
-                    
+
                     processing_pbar.update(1)
                     logging.info(f'Copied: {source_file} to {target_file}')  # 记录日志
-
 
         # 获取最终结果并输出
         traversed_files = traversal_pbar.format_dict['n']
         processed_files = processing_pbar.format_dict['n']
         logging.info(f'{dirs}: Total files processed: {traversed_files}, Files copied: {processed_files}')
-
 
 
 # 复制所有文件，排除指定的目录
@@ -111,7 +109,7 @@ def copy_folders(origin_path, copy_path, exclude_exts, rule_dir, all_copy):
     else:
         # 使用包含目录方式
         copy_folders_with_inclusion(origin_path, copy_path, exclude_exts, rule_dir, all_copy)
-        
+
 
 if __name__ == "__main__":
     origin_path = r"Z:\ssl-htdocs"  # 源文件夹路径
@@ -124,7 +122,7 @@ if __name__ == "__main__":
     setup_logging(log_file_path)
 
     exclude_exts = ['.pdf', '.PDF']  # 排除的文件扩展名
-    exclude_dirs = ['.git', 'pdf' ,'img']  # 排除的文件夹
+    exclude_dirs = [".git", "pdf", "xls"]  # 排除的文件夹
     include_dirs = ['recruit']  # 仅包含的文件夹
 
     # 使用排除目录方式
@@ -132,3 +130,18 @@ if __name__ == "__main__":
 
     # 使用包含目录方式
     # copy_folders_with_inclusion(origin_path, copy_path, exclude_exts, include_dirs, all_copy)
+
+
+async def run(script_name, params):
+    """
+    脚本入口函数
+    参数通过关键字参数传入
+    """
+    try:
+        # 设置全局变量 logger
+        global logger
+        logger = logging.getLogger(script_name)
+        copy_folders(**params)
+        return True
+    except Exception as e:
+        return str(e)
