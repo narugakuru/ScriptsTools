@@ -45,8 +45,8 @@ export default {
     data() {
         return {
             script_name: 'copy_list',
-            // origin_path: 'Z:/ssl-htdocs',
-            origin_path: 'E:/WorkSpace/WebKaisyu/ssl-htdocs-local',
+            origin_path: 'Z:/ssl-htdocs',
+            // origin_path: 'E:/WorkSpace/WebKaisyu/ssl-htdocs-local',
             copy_path: 'E:/WorkSpace/WebKaisyu/html_10114',
             // file_list: `recruit/msg01.html\nrecruit/way.html`,
             file_list: `effort/content.html
