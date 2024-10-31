@@ -13,15 +13,22 @@ router = APIRouter()
 
 @router.websocket("/ws/{script_name}")
 async def websocket_endpoint(websocket: WebSocket, script_name: str):
-    await websocket.accept()
+    """
+    处理 WebSocket 连接并发送消息。
+
+    参数:
+    - websocket: WebSocket 连接对象。
+    - script_name: 连接的脚本名称。
+    """
+    await websocket.accept()  # 接受 WebSocket 连接
     print(f"WebSocket connection established for {script_name}")
 
-    logger = setup_stream_logger(script_name)
-    ws_handler = WebSocketHandler(websocket)
-    logger.addHandler(ws_handler)
+    logger = setup_stream_logger(script_name)  # 设置日志记录器
+    ws_handler = WebSocketHandler(websocket)  # 创建 WebSocket 处理器
+    logger.addHandler(ws_handler)  # 将处理器添加到日志记录器中
 
-    timeout = timedelta(seconds=8)
-    last_message_time = datetime.now()
+    timeout = timedelta(seconds=8)  # 设置超时时间
+    last_message_time = datetime.now()  # 记录最后消息时间
 
     try:
         while True:
@@ -33,149 +40,91 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
                         ws_handler.message_queue.get(), timeout=5
                     )
                     print("=======websocket开始发送消息 =====")
-                    await websocket.send_text(msg)
+                    await websocket.send_text(msg)  # 发送文本消息
                     last_message_time = datetime.now()  # 更新最后消息时间
 
                 except asyncio.TimeoutError:
                     # 检查是否超过指定时间没有新消息
                     if datetime.now() - last_message_time > timeout:
-                        print("No messages received for 5 seconds, closing connection")
-                        await websocket.close()
+                        logger.info(
+                            "No messages received for 5 seconds, closing connection"
+                        )
+                        await websocket.close()  # 关闭连接
                         break
                     continue
                 except Exception as e:
-                    print(f"Error sending message: {e}")
+                    logger.info(f"Error sending message: {e}")
                     break  # 发生错误时直接退出
 
             except asyncio.CancelledError:
-                break
+                break  # 在任务被取消时退出循环
 
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.01)  # 小睡眠，避免高频率循环
 
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        logger.info(f"WebSocket error: {e}")
     finally:
-        logger.removeHandler(ws_handler)
+        logger.removeHandler(ws_handler)  # 从日志记录器中移除处理器
         try:
-            await websocket.close()
+            await websocket.close()  # 尝试关闭 WebSocket 连接
 
         except:
-            pass
-        print(f"WebSocket handler removed from logger {script_name}")
+            pass  # 忽略关闭过程中可能出现的异常
+        logger.info(
+            f"WebSocket handler removed from logger {script_name}"
+        )  # 打印处理器移除信息
 
 
-# 3. 修改 run_script
 @router.post("/{script_name}")
 async def run_script(script_name: str, params: dict):
+    """
+    执行指定的脚本并记录日志。
+
+    参数:
+    - script_name: 要执行的脚本名称。
+    - params: 执行脚本所需的参数字典。
+    """
     try:
-        logger = setup_stream_logger(script_name)
+        logger = setup_stream_logger(script_name)  # 设置日志记录器
+
+        # 添加文件日志处理器
+        log_file = f"E:\WorkSpace\WebKaisyu\{script_name}.log"
+        file_handler = logging.FileHandler(log_file)  # 创建文件处理器
+        logger.addHandler(file_handler)  # 将文件处理器添加到日志记录器中
+
         logger.info(f"======== run_script : {script_name} ==========")
 
         # 使用 create_task 来避免阻塞
-        task = asyncio.create_task(execute_script(script_name, params))
+        task = asyncio.create_task(execute_script(script_name, params))  # 创建异步任务
 
         # 等待任务完成
-        result = await task
+        result = await task  # 获取任务结果
 
         logger.info(f"Script completed: {script_name}")
-        logger.info(f"Result: {result}")
+        logger.info(f"Result: {result} ")
+        logger.info("\n\n" + "=" * 80 + "\n\n")
 
-        return success_response("run_script OK")
+        return success_response("run_script OK")  # 返回成功响应
     except Exception as e:
-        logger.error(f"Script failed: {str(e)}")
-        return {"success": False, "error": str(e)}
+        logger.error(f"Script failed: {str(e)}")  # 记录错误信息
+        return {"success": False, "error": str(e)}  # 返回错误信息
+    finally:
+        # 移除文件日志处理器
+        logger.removeHandler(file_handler)  # 从日志记录器中移除文件处理器
+        file_handler.close()  # 关闭文件处理器
 
 
 @router.get("/list_scripts")
 async def list_available_scripts():
-    """获取可用脚本列表"""
-    scripts = get_available_scripts()
-    return success_response(scripts)
+    """
+    获取可用脚本列表。
+
+    返回：
+    - 可用脚本的成功响应。
+    """
+    scripts = get_available_scripts()  # 获取可用脚本
+    return success_response(scripts)  # 返回成功响应
 
 
 # 存储活动连接的字典
-active_connections: Dict[str, WebSocket] = {}
-
-# WebSocket接口
-@router.websocket("/ws0/{script_name}")
-async def websocket_endpoint0(websocket: WebSocket, script_name: str):
-    # 实时返回队列中的日志
-    await websocket.accept()
-
-    # 将WebSocket连接添加到对应脚本的连接集合中
-    if script_name not in active_connections:
-        active_connections[script_name] = set()
-    active_connections[script_name].add(websocket)
-
-    # 初始化上次发送时间
-    last_sent_time = datetime.now()
-    timeout = timedelta(seconds=8)
-    try:
-        # 获取该脚本的日志队列
-        log_queue = queue_manager.get_queue(script_name)
-        print(f"===websocket_endpoint===log_queue: {script_name}====")
-        # 持续监    听队列并发送日志
-        while True:
-            try:
-                current_time = datetime.now()
-
-                # 检查超时
-                if current_time - last_sent_time > timeout:
-                    await websocket.close()
-                    print("Timeout occurred, closing WebSocket connection!!!")
-                    break
-                # 非阻塞方式获取日志
-                while not log_queue.empty():
-                    log_record = log_queue.get_nowait()
-                    await websocket.send_text(log_record)
-
-                # 适当的休眠以避免过度CPU使用
-                await asyncio.sleep(0.1)
-
-            except asyncio.CancelledError:
-                break
-    finally:
-        active_connections[script_name].remove(websocket)
-        if not active_connections[script_name]:
-            del active_connections[script_name]
-
-
-# WebSocket接口
-@router.websocket("/ws2/{script_name}")
-async def websocket_endpoint2(websocket: WebSocket, script_name: str):
-    # 测试用接口
-    await websocket.accept()
-
-    # 将WebSocket连接添加到对应脚本的连接集合中
-    if script_name not in active_connections:
-        active_connections[script_name] = set()
-    active_connections[script_name].add(websocket)
-
-    # 初始化上次发送时间
-    start_time = datetime.now()
-    timeout = timedelta(seconds=5)
-    try:
-        # 获取该脚本的日志队列
-        log_queue = queue_manager.get_queue(script_name)
-        print(f"===websocket_endpoint===log_queue: {script_name}====")
-        # 持续监听队列并发送日志
-        while True:
-            try:
-                current_time = datetime.now()
-
-                # 检查超时
-                if current_time - start_time > timeout:
-                    await websocket.close()
-                    print("Timeout occurred, closing WebSocket connection!!!")
-                    break
-
-                await websocket.send_text(str(datetime.now()))
-                # 适当的休眠以避免过度CPU使用
-                await asyncio.sleep(0.5)
-
-            except asyncio.CancelledError:
-                break
-    finally:
-        active_connections[script_name].remove(websocket)
-        if not active_connections[script_name]:
-            del active_connections[script_name]
+active_connections: Dict[str, WebSocket] = {}  # 初始化活动连接字典

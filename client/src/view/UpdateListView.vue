@@ -152,7 +152,40 @@ common/css/common.css
         
         clearLog() {
             this.logContent = '';
+        },
+        
+        async saveLog() {
+            try {
+                const parentPath = this.copy_path.substring(0, this.copy_path.lastIndexOf('/'));
+                const logFilePath = `${parentPath}/copy_list.log`;
+
+                const payload = {
+                    logContent: this.logContent,
+                    logFilePath: logFilePath
+                };
+
+                const response = await axios.post('/save-log', payload);
+                const { code, message } = response.data;
+
+                if (code === 200) {
+                    ElMessage({
+                        message: '日志保存成功',
+                        type: 'success',
+                        duration: 5000
+                    });
+                } else {
+                    throw new Error(message);
+                }
+            } catch (error) {
+                console.error('保存日志失败:', error);
+                ElMessage({
+                    message: `保存日志失败: ${error.message}`,
+                    type: 'error',
+                    duration: 5000
+                });
+            }
         }
+        
 
     },
    

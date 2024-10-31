@@ -7,16 +7,35 @@ from fastapi import WebSocket
 
 class QueueManager:
     def __init__(self):
+        """
+        初始化QueueManager类，用于管理多个异步队列
+        """
         self.queues: Dict[str, asyncio.Queue] = {}
 
     def get_queue(self, name: str) -> asyncio.Queue:
+        """
+        获取指定名称的异步队列，如果该队列不存在，则创建一个新队列并返回。
+
+        参数:
+        name (str): 队列的名称
+
+        返回:
+        asyncio.Queue: 指定名称的异步队列
+        """
         if name not in self.queues:
             self.queues[name] = asyncio.Queue()
         return self.queues[name]
 
     def remove_queue(self, name: str):
+        """
+        移除指定名称的异步队列。
+
+        参数:
+        name (str): 要移除的队列名称
+        """
         if name in self.queues:
             del self.queues[name]
+
 
 queue_manager = QueueManager()
 
@@ -25,11 +44,24 @@ class QueueHandler(logging.Handler):
     """
     日志处理器，将日志消息放入队列中
     """
+
     def __init__(self, queue: asyncio.Queue):
+        """
+        初始化QueueHandler实例。
+
+        参数:
+        queue (asyncio.Queue): 用于存放日志消息的异步队列
+        """
         super().__init__()
         self.queue = queue
 
     def emit(self, record):
+        """
+        将日志记录放入指定的队列中，如果队列已满则捕获异常。
+
+        参数:
+        record: 日志记录对象
+        """
         try:
             self.queue.put_nowait(self.format(record))
         except asyncio.QueueFull:
@@ -38,8 +70,17 @@ class QueueHandler(logging.Handler):
 
 # 1. 修改 WebSocketHandler
 class WebSocketHandler(logging.Handler):
+    """
+    WebSocket日志处理器，使日志消息通过WebSocket发送
+    """
 
     def __init__(self, websocket: WebSocket):
+        """
+        初始化WebSocketHandler实例。
+
+        参数:
+        websocket (WebSocket): WebSocket连接对象
+        """
         super().__init__()
         self.websocket = websocket
         self.message_queue = asyncio.Queue()  # 添加消息队列
@@ -48,16 +89,27 @@ class WebSocketHandler(logging.Handler):
         )
 
     def emit(self, record):
+        """
+        将日志记录格式化并放入消息队列中，如果发生异常则处理错误。
+
+        参数:
+        record: 日志记录对象
+        """
         try:
             msg = self.format(record)
             # 将消息放入队列
             asyncio.create_task(self.message_queue.put(msg))
         except Exception as e:
             print(f"Error in emit: {str(e)}")
-
             self.handleError(record)
-    # 在WebSocketHandler中添加更多调试信息
+
     async def _async_send(self, message: str):
+        """
+        通过WebSocket异步发送消息，并处理可能的异常。
+
+        参数:
+        message (str): 要发送的消息字符串
+        """
         try:
             print(f"Attempting to send message via WebSocket: {message[:20]}...")
             await self.websocket.send_text(message)
@@ -67,6 +119,15 @@ class WebSocketHandler(logging.Handler):
 
 
 def setup_logger(logger_name="app"):
+    """
+    设置全局日志记录器，包括控制台和文件处理器。
+
+    参数:
+    logger_name (str): 日志记录器的名称，默认为"app"
+
+    返回:
+    logging.Logger: 配置好的日志记录器
+    """
     logger = logging.getLogger(logger_name)
     if not logger.hasHandlers():
         logger.setLevel(logging.INFO)
@@ -90,19 +151,21 @@ def setup_logger(logger_name="app"):
         logger.addHandler(file_handler)
     return logger
 
+
 def setup_stream_logger(logger_name="stream"):
-    # logger_name=script_name
+    """
+    设置流日志记录器，指定用于控制台输出的日志记录器。
+
+    参数:
+    logger_name (str): 日志记录器的名称，默认为"stream"
+
+    返回:
+    logging.Logger: 配置好的流日志记录器
+    """
     logger = logging.getLogger(logger_name)
     print(f"======== 指定获取脚本logger名称：{logger_name} =========")
 
     if not logger.hasHandlers():
-        # # Get or create queue from QueueManager
-        # log_queue = queue_manager.get_queue(logger_name)
-        # # Set new queue handler
-        # queue_handler = QueueHandler(log_queue)
-        # queue_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-        # logger.addHandler(queue_handler)
-
         # # Add console handler for direct output
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.DEBUG)
