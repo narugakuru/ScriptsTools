@@ -18,6 +18,16 @@ const routes = [
         component: () => import('../view/IndexView.vue'),
       },
       {
+        path: '/scripts',
+        name: 'scripts',
+        component: () => import('../view/ScriptsForm.vue'),
+      },
+      {
+        path: '/upload',
+        name: 'upload',
+        component: () => import('../view/UploadView.vue'),
+      },
+      {
         path: '/welcome',
         name: 'welcome',  
         component: () => import('../view/WelcomeView.vue'),

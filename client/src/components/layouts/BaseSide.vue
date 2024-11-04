@@ -6,7 +6,10 @@ import { ref } from 'vue';
 const menuItems = ref([
   { index: '/welcome', icon: 'setting', label: '比对复制文件夹' },
   { index: '/updateList', icon: 'setting', label: '批量复制文件列表' },
-  { index: '/logs', icon: 'document', label: '日志' }
+  { index: '/logs', icon: 'document', label: '日志' },
+  { index: '/scripts', icon: 'document', label: 'scripts' },
+  { index: '/upload', icon: 'document', label: 'upload' },
+
 ]);
 
 </script>
@@ -20,7 +23,7 @@ const menuItems = ref([
 
     <el-scrollbar max-height="800">
 
-      <el-menu router default-active="1" unique-opened :collapse="isCollapse">
+      <el-menu router default-active="/updateList" unique-opened :collapse="isCollapse">
         
         <template v-for="item in menuItems" :key="item.index">
           <el-menu-item :index="item.index">

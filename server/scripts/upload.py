@@ -3,15 +3,18 @@ import paramiko
 from scp import SCPClient
 import logging
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+# from  server.utils.app_logger import *
+from server.utils.printer_wrapper import format_and_print_params
+import asyncio
+
 
 # 定义服务器信息
 hostname = "153.120.83.98"
 username = "ubuntu"
 password = "STIDTI2024"
+
+global logger
+
 
 def create_ssh_client(server, user, password):
     client = paramiko.SSHClient()
@@ -24,7 +27,8 @@ def create_ssh_client(server, user, password):
         raise
     return client
 
-def upload_directory(local_folder, remote_base, ssh_client):
+
+async def upload_directory(local_folder, remote_base, ssh_client):
     try:
         # 统计本地文件夹的文件总数
         file_count = sum([len(files) for _, _, files in os.walk(local_folder)])
@@ -36,7 +40,7 @@ def upload_directory(local_folder, remote_base, ssh_client):
                 logging.info(f"文件列表: {os.path.join(root, file)}")
 
         with SCPClient(ssh_client.get_transport()) as scp:
-            scp.put(local_folder, remote_path=remote_base, recursive=True)
+            # scp.put(local_folder, remote_path=remote_base, recursive=True)
             logging.info(f"{local_folder} 上传到 {remote_base} 成功")
 
     except Exception as e:
@@ -44,7 +48,8 @@ def upload_directory(local_folder, remote_base, ssh_client):
         raise
 
 
-def upload(local_base, remote_base, target_folder):
+async def upload(local_base, remote_base, target_folder):
+
     local_folder = os.path.join(local_base, target_folder)
     ssh_client = None
     try:
@@ -52,21 +57,47 @@ def upload(local_base, remote_base, target_folder):
         ssh_client = create_ssh_client(hostname, username, password)
 
         # 上传本地目录
-        upload_directory(local_folder, remote_base, ssh_client)
+        await upload_directory(local_folder, remote_base, ssh_client)
+
+        return True
+
+    except Exception as e:
+        logging.error(f"上传失败: {e}")
+        return False
     finally:
         if ssh_client:
             ssh_client.close()
             logging.info("SSH 连接已关闭")
 
 
-# 对外接口
-def deploy_project():
-    local_base = "E:/WorkSpace/WebKaisyu/"
-    remote_base = "/home/ubuntu/kaikei/"
-    target_folder = "html_1104_10"
+# 函数功能：运行复制操作的主函数
+# 参数列表：
+# script_name (str): 脚本名称，用于日志记录
+# params (dict): 包含复制操作所需参数的字典，键应与copy_files_with_structure函数的参数匹配
+# 返回值：布尔值，指示运行是否成功，若失败则返回错误信息
+# local_base, remote_base, target_folder
 
-    upload(local_base, remote_base, target_folder)
+
+async def run(script_name, params):
+    try:
+        global logger
+        logger = logging.getLogger(script_name)
+        print(f"========== run! ： {script_name} ===========")
+
+        # 创建一个新的事件循环来处理文件操作
+        result = await upload(**params)
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error in run: {str(e)}")
+        return str(e)
 
 
 if __name__ == "__main__":
-    deploy_project()
+
+    local_base = "E:/WorkSpace/WebKaisyu/"
+    remote_base = "/home/ubuntu/kaikei/"
+    target_folder = "html_1104_11"
+
+    upload(local_base, remote_base, target_folder)

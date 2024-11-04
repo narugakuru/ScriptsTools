@@ -98,6 +98,7 @@ export default {
                 };
 
                 const response = await axios.post(`/script/${this.script_name}`, payload);
+                console.log('发送的参数:', payload);
                 const { code, message, data } = response.data;
                 console.log(code, message, data)
 

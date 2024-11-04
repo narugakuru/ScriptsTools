@@ -8,6 +8,7 @@ from server.utils.app_logger import *
 from typing import Dict, Set
 from datetime import datetime, timedelta
 
+
 router = APIRouter()
 
 
@@ -39,7 +40,7 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
                     msg = await asyncio.wait_for(
                         ws_handler.message_queue.get(), timeout=5
                     )
-                    print("=======websocket开始发送消息 =====")
+                    logging.debug("=======websocket开始发送消息 =====")
                     await websocket.send_text(msg)  # 发送文本消息
                     last_message_time = datetime.now()  # 更新最后消息时间
 
@@ -75,6 +76,7 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
         )  # 打印处理器移除信息
 
 
+@format_and_print_params
 @router.post("/{script_name}")
 async def run_script(script_name: str, params: dict):
     """
