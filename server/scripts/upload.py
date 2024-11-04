@@ -76,8 +76,6 @@ async def upload(local_base, remote_base, target_folder):
 # params (dict): 包含复制操作所需参数的字典，键应与copy_files_with_structure函数的参数匹配
 # 返回值：布尔值，指示运行是否成功，若失败则返回错误信息
 # local_base, remote_base, target_folder
-
-
 async def run(script_name, params):
     try:
         global logger

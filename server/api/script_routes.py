@@ -76,7 +76,7 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
         )  # 打印处理器移除信息
 
 
-@format_and_print_params
+# @format_and_print_params
 @router.post("/{script_name}")
 async def run_script(script_name: str, params: dict):
     """
@@ -92,6 +92,10 @@ async def run_script(script_name: str, params: dict):
         # 添加文件日志处理器
         log_file = f"E:\WorkSpace\WebKaisyu\{script_name}.log"
         file_handler = logging.FileHandler(log_file)  # 创建文件处理器
+        file_formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)  # 将文件处理器添加到日志记录器中
 
         logger.info(f"======== run_script : {script_name} ==========")
@@ -104,7 +108,7 @@ async def run_script(script_name: str, params: dict):
 
         logger.info(f"Script completed: {script_name}")
         logger.info(f"Result: {result} ")
-        logger.info("\n\n" + "=" * 80 + "\n\n")
+        logger.info("\n\n" + "=" * 60 + "\n\n")
 
         return success_response("run_script OK")  # 返回成功响应
     except Exception as e:
