@@ -15,14 +15,14 @@
         </el-form-item>
 
         <el-form-item>
-        <el-button type="primary" @click="executeTask" :loading="isRunning">
-            {{ isRunning ? '执行中...' : '执行' }}
-        </el-button>
-        <!-- 添加清空日志按钮 -->
-        <el-button type="danger" @click="clearLog" :disabled="isRunning">
-            清空日志
-        </el-button>
-    </el-form-item>
+            <el-button type="primary" @click="executeTask" :loading="isRunning">
+                {{ isRunning ? '执行中...' : '执行' }}
+            </el-button>
+            <!-- 添加清空日志按钮 -->
+            <el-button type="danger" @click="clearLog" :disabled="isRunning">
+                清空日志
+            </el-button>
+        </el-form-item>
 
         <!-- 添加日志显示区域 -->
         <el-form-item label="执行日志">
@@ -39,33 +39,54 @@
 <script>
 import axios from '../axios';  // 使用已经创建的 axios 实例
 import { ElMessage } from 'element-plus'
-
+import { openDB } from 'idb';
 
 export default {
     data() {
         return {
             script_name: 'copy_list',
-            origin_path: 'Z:/ssl-htdocs',
-            // origin_path: 'E:/WorkSpace/WebKaisyu/ssl-htdocs-local',
-            copy_path: 'E:/WorkSpace/WebKaisyu/html_10114',
-            // file_list: `recruit/msg01.html\nrecruit/way.html`,
-            file_list: `effort/content.html
-effort/reflect01.html
-effort/reflect02.html
-effort/exam/report.html
-common/css/common.css
-`,
+            origin_path: '',
+            copy_path: '',
+            file_list: '',
             logContent: '',  // 初始化日志内容
             isConnected: false,
             isExecuting: false,
             isRunning: false,
-            // rows: 15
         };
+    },
+    async created() {
+        // 在组件创建时加载 IndexedDB 中的数据
+        const db = await openDB('app', 1, {
+            upgrade(db) {
+                db.createObjectStore('params', { keyPath: 'script_name' });
+            },
+        });
+
+        const entry = await db.get('params', this.script_name);
+
+        if (entry) {
+            this.origin_path = entry.origin_path;
+            this.copy_path = entry.copy_path;
+            this.file_list = entry.file_list;
+        } else {
+            this.origin_path = 'Z:/ssl-htdocs';
+            this.copy_path = 'E:/WorkSpace/WebKaisyu/html_11';
+            this.file_list = 'effort/content.html';
+        }
     },
     methods: {
         async executeTask() {
             this.isRunning = true;  // 开始执行任务，设置为执行中
             try {
+                // 保存参数到 IndexedDB
+                const db = await openDB('app', 1);
+                await db.put('params', {
+                    script_name: this.script_name,
+                    origin_path: this.origin_path,
+                    copy_path: this.copy_path,
+                    file_list: this.file_list
+                });
+
                 // 1. 先建立WebSocket连接
                 await this.setupWebSocket(this.script_name);
 
@@ -94,7 +115,7 @@ common/css/common.css
                 //         this.socket.close();
                 //     }
                 // }, 3000); // 10秒后关闭
-                                
+
             } catch (error) {
                 console.error('执行任务失败:', error);
                 ElMessage({
@@ -149,11 +170,11 @@ common/css/common.css
                 }
             });
         },
-        
+
         clearLog() {
             this.logContent = '';
         },
-        
+
         async saveLog() {
             try {
                 const parentPath = this.copy_path.substring(0, this.copy_path.lastIndexOf('/'));
@@ -185,10 +206,10 @@ common/css/common.css
                 });
             }
         }
-        
+
 
     },
-   
+
 };
 </script>
 
