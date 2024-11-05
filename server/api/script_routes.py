@@ -38,7 +38,7 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
                 try:
                     # 尝试从队列获取消息，设置超时时间
                     msg = await asyncio.wait_for(
-                        ws_handler.message_queue.get(), timeout=5
+                        ws_handler.message_queue.get(), timeout=10
                     )
                     logging.debug("=======websocket开始发送消息 =====")
                     await websocket.send_text(msg)  # 发送文本消息
@@ -48,7 +48,7 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
                     # 检查是否超过指定时间没有新消息
                     if datetime.now() - last_message_time > timeout:
                         logger.info(
-                            "No messages received for 5 seconds, closing connection"
+                            "No messages received for 10 seconds, closing connection"
                         )
                         await websocket.close()  # 关闭连接
                         break
@@ -98,7 +98,7 @@ async def run_script(script_name: str, params: dict):
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)  # 将文件处理器添加到日志记录器中
 
-        logger.info(f"======== run_script : {script_name} ==========")
+        logger.info(f"======== run_script api接口 : {script_name} ==========")
 
         # 使用 create_task 来避免阻塞
         task = asyncio.create_task(execute_script(script_name, params))  # 创建异步任务

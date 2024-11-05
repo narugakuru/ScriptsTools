@@ -14,14 +14,14 @@ username = "ubuntu"
 password = "STIDTI2024"
 
 global logger
-
+logger = logging.getLogger(__name__)
 
 def create_ssh_client(server, user, password):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        client.connect(server, username=user, password=password, timeout=10)
-        logging.info("SSH 连接成功")
+        client.connect(server, username=user, password=password, timeout=5)
+        logger.info("SSH 连接成功")
     except paramiko.SSHException as e:
         logging.error(f"SSH 连接失败: {e}")
         raise
@@ -32,22 +32,24 @@ async def upload_directory(local_folder, remote_base, ssh_client):
     try:
         # 统计本地文件夹的文件总数
         file_count = sum([len(files) for _, _, files in os.walk(local_folder)])
-        logging.info(f"本地文件夹 {local_folder} 中的文件总数: {file_count}")
+        logger.info(f"本地文件夹 {local_folder} 中的文件总数: {file_count}")
 
         # 打印出整个文件列表
         for root, dirs, files in os.walk(local_folder):
             for file in files:
-                logging.info(f"文件列表: {os.path.join(root, file)}")
+                logger.info(f"文件列表: {os.path.join(root, file)}")
+            await asyncio.sleep(0.01)
 
         with SCPClient(ssh_client.get_transport()) as scp:
-            # scp.put(local_folder, remote_path=remote_base, recursive=True)
-            logging.info(f"{local_folder} 上传到 {remote_base} 成功")
+            scp.put(local_folder, remote_path=remote_base, recursive=True)
+            logger.info(f"{local_folder} 上传到 {remote_base} 成功")
 
     except Exception as e:
         logging.error(f"上传失败: {e}")
         raise
 
 
+@format_and_print_params
 async def upload(local_base, remote_base, target_folder):
 
     local_folder = os.path.join(local_base, target_folder)
@@ -55,7 +57,7 @@ async def upload(local_base, remote_base, target_folder):
     try:
         # 连接到服务器
         ssh_client = create_ssh_client(hostname, username, password)
-
+        await asyncio.sleep(0.01)
         # 上传本地目录
         await upload_directory(local_folder, remote_base, ssh_client)
 
@@ -67,7 +69,7 @@ async def upload(local_base, remote_base, target_folder):
     finally:
         if ssh_client:
             ssh_client.close()
-            logging.info("SSH 连接已关闭")
+            logger.info("SSH 连接已关闭")
 
 
 # 函数功能：运行复制操作的主函数
@@ -80,7 +82,7 @@ async def run(script_name, params):
     try:
         global logger
         logger = logging.getLogger(script_name)
-        print(f"========== run! ： {script_name} ===========")
+        logger.info(f"========== run! ： {script_name} ===========")
 
         # 创建一个新的事件循环来处理文件操作
         result = await upload(**params)

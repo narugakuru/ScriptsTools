@@ -18,13 +18,13 @@
             <!-- 添加日志显示区域 -->
             <el-form-item label="执行日志">
                 <div class="log-container">
-                    <el-input type="textarea" v-model="logContent" readonly :rows="Number(15)" class="log-area"></el-input>
+                    <el-input type="textarea" v-model="logContent" readonly :rows="Number(15)"
+                        class="log-area"></el-input>
                     <div class="log-status" v-if="isConnected">
                         <el-tag type="success">已连接</el-tag>
                     </div>
                 </div>
             </el-form-item>
-
         </el-form>
     </div>
 </template>
@@ -35,6 +35,12 @@ import axios from '../axios';  // 使用已经创建的 axios 实例
 import { openDB } from 'idb';
 
 export default {
+    // props: {
+    //     scriptName: {
+    //         type: String,
+    //         required: true
+    //     }
+    // },
     props: {
         scriptName: {
             type: String,
@@ -50,18 +56,21 @@ export default {
             isRunning: false,
         };
     },
-
-    async created() {
-        await this.loadFormConfig();
-        await this.loadFormData();  // 加载存储的表单数据
+    watch: {
+        scriptName: {
+            immediate: true,
+            handler(newScriptName) {
+                this.loadFormConfig(newScriptName);
+            }
+        }
     },
     methods: {
-        async loadFormConfig() {
+        async loadFormConfig(scriptName) {
             try {
                 const response = await axios.get('/static/formConfig.json');
                 const formConfig = response.data.script_list;  // 先获取 script_list
-                const viewFormConfig = formConfig[this.scriptName];  // 然后再获取特定的配置
-
+                const viewFormConfig = formConfig[scriptName];  // 然后再获取特定的配置
+                console.log('scriptName:', scriptName)
                 console.log('script_list:', formConfig);  // 查看 script_list 的内容
                 console.log('获取的配置:', response.data);  // 添加调试信息
                 console.log('viewFormConfig:', viewFormConfig);  // 查看特定配置
@@ -72,7 +81,7 @@ export default {
                         this.formData[field.model] = field.default; // 给参数设置default默认值
                     });
                 } else {
-                    throw new Error(`未找到 script_name 为 ${this.scriptName} 的表单配置`);
+                    throw new Error(`未找到 script_name 为 ${scriptName} 的表单配置`);
                 }
             } catch (error) {
                 console.error('加载表单配置失败:', error);
@@ -202,7 +211,6 @@ export default {
             if (storedData) {
                 this.formData = storedData;
             }
-            
         },
     }
 };

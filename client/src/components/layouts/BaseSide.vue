@@ -4,9 +4,10 @@ import { isCollapse } from './layouts'
 import { ref } from 'vue';
 
 const menuItems = ref([
-  { index: '/welcome', icon: 'setting', label: '比对复制文件夹' },
-  { index: '/updateList', icon: 'setting', label: '批量复制文件列表' },
-  { index: '/logs', icon: 'document', label: '日志' },
+  // { index: '/welcome', icon: 'setting', label: '比对复制文件夹' },
+  // { index: '/updateList', icon: 'setting', label: '批量复制文件列表' },
+  // { index: '/logs', icon: 'document', label: '日志' },
+  { index: '/scriptslist', icon: 'setting', label: 'scriptslist' },
   { index: '/scripts', icon: 'document', label: 'scripts' },
   { index: '/upload', icon: 'document', label: 'upload' },
 
@@ -17,7 +18,7 @@ const menuItems = ref([
 
 <template>
   <el-aside width="200px">
-    <router-link to="/">
+    <router-link to="/scriptslist">
       <h1>Home</h1>
     </router-link>
 

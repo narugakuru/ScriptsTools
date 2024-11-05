@@ -16,7 +16,7 @@ import { isCollapse } from './layouts'
     </el-icon>
 
 
-    <el-breadcrumb separator="/">
+    <!-- <el-breadcrumb separator="/">
 
       <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
 
@@ -28,7 +28,7 @@ import { isCollapse } from './layouts'
       <el-breadcrumb-item>promotion list</el-breadcrumb-item>
 
       <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
-    </el-breadcrumb>
+    </el-breadcrumb> -->
 
 
   </el-header>

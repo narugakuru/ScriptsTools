@@ -10,12 +10,23 @@ const routes = [
     children: [
       {
         path: '/static',
-        redirect: '/updateList', // 默认重定向到 /index
+        redirect: '/scriptslist', // 默认重定向到 /index
       },
       {
         path: '/index',
         name: 'index',
         component: () => import('../view/IndexView.vue'),
+      },
+      {
+        path: '/scriptslist',
+        name: 'scriptslist',
+        component: () => import('../view/ScriptsList.vue'),
+      },
+      {
+        path: '/script/:scriptName',
+        name: 'ScriptsFormTemp',
+        component: () => import('../view/ScriptsFormTemp.vue'),
+        props: true
       },
       {
         path: '/scripts',

@@ -7,6 +7,10 @@ from server.utils.printer_wrapper import format_and_print_params
 import asyncio
 
 
+global logger
+logger = logging.getLogger(__name__)
+
+
 # 函数功能：标准化文件路径
 # 参数列表：
 # raw_paths (str): 原始文件路径字符串，可能包含多个路径，每行一个
@@ -35,6 +39,7 @@ async def normalize_paths(raw_paths):
 # copy_path (str): 目标文件夹的路径
 # file_list (list或str): 要复制的文件列表，可以是字符串列表或单个字符串
 # 返回值：无返回值，异步执行文件复制任务
+@format_and_print_params
 async def copy_files_with_structure(origin_path, copy_path, file_list):
     logger.info("====== copy_files_with_structure =======")
 

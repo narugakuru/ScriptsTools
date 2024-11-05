@@ -56,7 +56,7 @@ export default {
                 const response = await axios.get('/static/formConfig.json');
                 const formConfig = response.data.script_list;  // 先获取 script_list
                 const viewFormConfig = formConfig[this.script_name];  // 然后再获取特定的配置
-
+                console.log('scriptName:', this.script_name)
                 console.log('script_list:', formConfig);  // 查看 script_list 的内容
                 console.log('获取的配置:', response.data);  // 添加调试信息
                 console.log('viewFormConfig:', viewFormConfig);  // 查看特定配置

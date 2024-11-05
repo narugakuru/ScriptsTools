@@ -111,7 +111,7 @@ class WebSocketHandler(logging.Handler):
         message (str): 要发送的消息字符串
         """
         try:
-            print(f"Attempting to send message via WebSocket: {message[:20]}...")
+            # print(f"Attempting to send message via WebSocket: {message[:20]}...")
             await self.websocket.send_text(message)
             print("Message sent successfully")
         except Exception as e:
