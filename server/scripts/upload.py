@@ -6,12 +6,8 @@ import logging
 # from  server.utils.app_logger import *
 from server.utils.printer_wrapper import format_and_print_params
 import asyncio
+from server.scripts.env import hostname, username, password
 
-
-# 定义服务器信息
-hostname = "153.120.83.98"
-username = "ubuntu"
-password = "STIDTI2024"
 
 global logger
 logger = logging.getLogger(__name__)

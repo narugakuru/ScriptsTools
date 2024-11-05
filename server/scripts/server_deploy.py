@@ -2,6 +2,7 @@ import paramiko
 import os
 from pathlib import Path
 from scp import SCPClient
+from server.scripts.env import hostname, username, password
 
 
 class ServerDeployer:
@@ -105,9 +106,7 @@ def deploy_to_server(local_folder, remote_folder):
     :param local_folder: 本地HTML文件夹路径
     :return: 布尔值表示是否成功
     """
-    deployer = ServerDeployer(
-        hostname="153.120.83.98", username="ubuntu", password="STIDTI2024"
-    )
+    deployer = ServerDeployer(hostname, username, password)
     return deployer.deploy_html(local_folder, remote_folder)
 
 

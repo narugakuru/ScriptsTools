@@ -1,3 +1,6 @@
+# 环境
+server/scripts/env.py
+
 # FLuent
 app.build
 app.dist
