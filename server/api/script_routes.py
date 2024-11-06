@@ -28,6 +28,14 @@ async def websocket_endpoint(websocket: WebSocket, script_name: str):
     ws_handler = WebSocketHandler(websocket)  # 创建 WebSocket 处理器
     logger.addHandler(ws_handler)  # 将处理器添加到日志记录器中
 
+    logger_info = {
+        "name": logger.name,
+        "level": logger.level,
+        "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+        "propagate": logger.propagate,
+    }
+    print(f"run_script函数的Logger 信息: {logger_info}")
+
     timeout = timedelta(seconds=8)  # 设置超时时间
     last_message_time = datetime.now()  # 记录最后消息时间
 
@@ -88,6 +96,14 @@ async def run_script(script_name: str, params: dict):
     """
     try:
         logger = setup_stream_logger(script_name)  # 设置日志记录器
+
+        logger_info = {
+            "name": logger.name,
+            "level": logger.level,
+            "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+            "propagate": logger.propagate,
+        }
+        print(f"run_script函数的Logger 信息: {logger_info}")
 
         # 添加文件日志处理器
         log_file = f"E:\WorkSpace\WebKaisyu\{script_name}.log"

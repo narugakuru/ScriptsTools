@@ -10,9 +10,12 @@ from server.scripts.env import hostname, username, password
 
 
 global logger
-logger = logging.getLogger(__name__)
+# 获取当前文件的名词
+current_file_name = __name__.split(".")[-1]
+logger = logging.getLogger(current_file_name)
 
 def create_ssh_client(server, user, password):
+
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
@@ -26,6 +29,13 @@ def create_ssh_client(server, user, password):
 
 async def upload_directory(local_folder, remote_base, ssh_client):
     try:
+        logger_info = {
+            "name": logger.name,
+            "level": logger.level,
+            "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+            "propagate": logger.propagate,
+        }
+        print(f"upload_directory函数的Logger 信息: {logger_info}")
         # 统计本地文件夹的文件总数
         file_count = sum([len(files) for _, _, files in os.walk(local_folder)])
         logger.info(f"本地文件夹 {local_folder} 中的文件总数: {file_count}")

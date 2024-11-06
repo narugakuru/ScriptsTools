@@ -8,8 +8,9 @@ import asyncio
 
 
 global logger
-logger = logging.getLogger(__name__)
-
+# 获取当前文件的名词
+current_file_name = __name__.split(".")[-1]
+logger = logging.getLogger(current_file_name)
 
 # 函数功能：标准化文件路径
 # 参数列表：
@@ -47,7 +48,8 @@ async def copy_files_with_structure(origin_path, copy_path, file_list):
         logger.info("====== file_list is normalizing! ======")
         file_list = await normalize_paths(file_list)
 
-    print(f'copy folder from {origin_path} to {copy_path}')
+    logger.info(f"copy folder from {origin_path} to {copy_path}")
+    logger.info(f"更新文件总计：{len(file_list)}个")
 
     # 创建目标文件夹（如果不存在）
     await asyncio.to_thread(os.makedirs, os.path.dirname(copy_path), exist_ok=True)
@@ -86,7 +88,15 @@ async def run(script_name, params):
     try:
         global logger
         logger = logging.getLogger(script_name)
-        print(f"========== run! ： {script_name} ===========")
+        logger.info(f"========== run! ： {script_name} ===========")
+
+        logger_info = {
+            "name": logger.name,
+            "level": logger.level,
+            "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+            "propagate": logger.propagate,
+        }
+        print(f"Logger 信息: {logger_info}")
 
         # 创建一个新的事件循环来处理文件操作
         result = await copy_files_with_structure(**params)
