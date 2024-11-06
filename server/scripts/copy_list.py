@@ -12,6 +12,15 @@ global logger
 current_file_name = __name__.split(".")[-1]
 logger = logging.getLogger(current_file_name)
 
+logger_info = {
+    "name": logger.name,
+    "level": logger.level,
+    "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+    "propagate": logger.propagate,
+}
+print(f"{current_file_name}文件的Logger 信息: {logger_info}")
+
+
 # 函数功能：标准化文件路径
 # 参数列表：
 # raw_paths (str): 原始文件路径字符串，可能包含多个路径，每行一个

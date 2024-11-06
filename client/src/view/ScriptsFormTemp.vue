@@ -35,12 +35,6 @@ import axios from '../axios';  // 使用已经创建的 axios 实例
 import { openDB } from 'idb';
 
 export default {
-    // props: {
-    //     scriptName: {
-    //         type: String,
-    //         required: true
-    //     }
-    // },
     props: {
         scriptName: {
             type: String,
@@ -61,8 +55,13 @@ export default {
             immediate: true,
             handler(newScriptName) {
                 this.loadFormConfig(newScriptName);
+                this.loadFormData(newScriptName);  // 确保在 scriptName 变化时加载数据
             }
         }
+    },
+    async created() {
+        await this.loadFormConfig(this.scriptName);
+        await this.loadFormData(this.scriptName);  // 加载存储的表单数据
     },
     methods: {
         async loadFormConfig(scriptName) {
@@ -129,7 +128,7 @@ export default {
                 });
 
                 // 执行成功后存储表单数据
-                await this.saveFormData();
+                await this.saveFormData(this.scriptName);
 
             } catch (error) {
                 console.error('执行任务失败:', error);
@@ -189,7 +188,7 @@ export default {
             this.logContent = '';
         },
 
-        async saveFormData() {
+        async saveFormData(scriptName) {
             const db = await openDB('formDataDB', 1, {
                 upgrade(db) {
                     db.createObjectStore('formDataStore');
@@ -197,17 +196,17 @@ export default {
             });
             // 深拷贝 formData 以确保没有不可克隆的内容
             const formDataCopy = JSON.parse(JSON.stringify(this.formData));
-            await db.put('formDataStore', formDataCopy, this.scriptName);
+            await db.put('formDataStore', formDataCopy, scriptName);
         },
 
-        async loadFormData() {
+        async loadFormData(scriptName) {
             const db = await openDB('formDataDB', 1, {
                 upgrade(db) {
                     db.createObjectStore('formDataStore');
                 }
             });
 
-            const storedData = await db.get('formDataStore', this.scriptName);
+            const storedData = await db.get('formDataStore', scriptName);
             if (storedData) {
                 this.formData = storedData;
             }

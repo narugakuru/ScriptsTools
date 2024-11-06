@@ -7,8 +7,9 @@ from tqdm.asyncio import tqdm as async_tqdm
 import asyncio
 
 global logger
-logger = logging.getLogger(__name__)
-logger.info(f" 脚本全局初始化logger {__name__}")
+# 获取当前文件的名词
+current_file_name = __name__.split(".")[-1]
+logger = logging.getLogger(current_file_name)
 
 
 # 通用文件复制逻辑
