@@ -14,6 +14,14 @@ global logger
 current_file_name = __name__.split(".")[-1]
 logger = logging.getLogger(current_file_name)
 
+logger_info = {
+    "name": logger.name,
+    "level": logger.level,
+    "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+    "propagate": logger.propagate,
+}
+print(f"{current_file_name}文件的Logger 信息: {logger_info}")
+
 def create_ssh_client(server, user, password):
 
     client = paramiko.SSHClient()
@@ -47,7 +55,7 @@ async def upload_directory(local_folder, remote_base, ssh_client):
             await asyncio.sleep(0.01)
 
         with SCPClient(ssh_client.get_transport()) as scp:
-
+            # =============================================================================================
             # scp.put(local_folder, remote_path=remote_base, recursive=True)
             logger.info(f"{local_folder} 上传到 {remote_base} 成功")
 
@@ -87,8 +95,8 @@ async def upload(local_base, remote_base, target_folder):
 # local_base, remote_base, target_folder
 async def run(script_name, params):
     try:
-        global logger
-        logger = logging.getLogger(script_name)
+        # global logger
+        # logger = logging.getLogger(script_name)
         logger.info(f"========== run! ： {script_name} ===========")
 
         # 创建一个新的事件循环来处理文件操作

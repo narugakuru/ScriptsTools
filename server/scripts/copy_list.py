@@ -95,17 +95,9 @@ async def copy_files_with_structure(origin_path, copy_path, file_list):
 # @format_and_print_params
 async def run(script_name, params):
     try:
-        global logger
-        logger = logging.getLogger(script_name)
+        # global logger
+        # logger = logging.getLogger(script_name)
         logger.info(f"========== run! ： {script_name} ===========")
-
-        logger_info = {
-            "name": logger.name,
-            "level": logger.level,
-            "handlers": [handler.__class__.__name__ for handler in logger.handlers],
-            "propagate": logger.propagate,
-        }
-        print(f"Logger 信息: {logger_info}")
 
         # 创建一个新的事件循环来处理文件操作
         result = await copy_files_with_structure(**params)

@@ -11,6 +11,14 @@ global logger
 current_file_name = __name__.split(".")[-1]
 logger = logging.getLogger(current_file_name)
 
+logger_info = {
+    "name": logger.name,
+    "level": logger.level,
+    "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+    "propagate": logger.propagate,
+}
+print(f"{current_file_name}文件的Logger 信息: {logger_info}")
+
 
 # 通用文件复制逻辑
 async def copy_files(
