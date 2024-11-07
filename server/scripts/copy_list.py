@@ -81,7 +81,7 @@ async def copy_files_with_structure(origin_path, copy_path, file_list):
             # 让出控制权，使日志有机会被处理
             await asyncio.sleep(0.01)
         else:
-            logger.info(f"\nSkipped: {source} (Not a file)")
+            logger.info(f"\nSkipped: {source} (Not a file !!!!!!!!!!!!)")
             await asyncio.sleep(0.01)
 
     return True

@@ -56,7 +56,7 @@ async def upload_directory(local_folder, remote_base, ssh_client):
 
         with SCPClient(ssh_client.get_transport()) as scp:
             # =============================================================================================
-            # scp.put(local_folder, remote_path=remote_base, recursive=True)
+            scp.put(local_folder, remote_path=remote_base, recursive=True)
             logger.info(f"{local_folder} 上传到 {remote_base} 成功")
 
     except Exception as e:

@@ -74,6 +74,8 @@ async def copy_files(
                     processing_pbar.update(1)
                     logger.info(f"Copied: {source_file} to {target_file}")  # 记录日志
 
+        await asyncio.sleep(0.01)
+
         # 获取最终结果并输出
         traversed_files = traversal_pbar.format_dict["n"]
         processed_files = processing_pbar.format_dict["n"]
