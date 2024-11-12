@@ -3,7 +3,7 @@ import csv
 import logging
 
 # from utils.backup import backup_file_or_folder
-from utils.config_setup import ConfigManager
+from server.utils.config_setup import ConfigManager
 
 # 设置日志配置
 logger = logging.getLogger("GlobalLogger")

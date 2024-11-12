@@ -19,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # 将 client/dist 目录挂载为 /api 根目录
 app.mount("/static", StaticFiles(directory=config.web_path, html=True), name="static")
 
@@ -34,7 +35,6 @@ async def serve_frontend(full_path: str):
 @app.get("/index")
 async def index():
     return FileResponse(os.path.join(config.web_path, "index.html"))
-
 
 
 if __name__ == "__main__":

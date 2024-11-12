@@ -2,6 +2,7 @@ import os
 import paramiko
 from scp import SCPClient
 import logging
+import subprocess, time
 
 # from  server.utils.app_logger import *
 from server.utils.printer_wrapper import format_and_print_params
@@ -87,6 +88,54 @@ async def upload(local_base, remote_base, target_folder):
             logger.info("SSH 连接已关闭")
 
 
+async def connect_ssh_cmd():
+    # 创建SSH连接命令
+    ssh_command = f"ssh {username}@{hostname}"
+
+    # 创建一个新的CMD窗口并执行SSH命令
+    process = subprocess.Popen(
+        ["start", "cmd", "/k", ssh_command],
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    # 等待一段时间确保窗口打开
+    time.sleep(2)
+
+    # 模拟键盘输入密码
+    subprocess.run(
+        [
+            "powershell",
+            "-Command",
+            'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("STIDTI2024{ENTER}")',
+        ]
+    )
+
+    # 等待密码输入完成
+    time.sleep(1)
+
+    # 模拟输入su命令
+    subprocess.run(
+        [
+            "powershell",
+            "-Command",
+            'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("su{ENTER}")',
+        ]
+    )
+
+    time.sleep(1)
+
+    # 模拟输入su密码
+    subprocess.run(
+        [
+            "powershell",
+            "-Command",
+            f'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("{password}{{ENTER}}")',
+        ]
+    )
+
+
 # 函数功能：运行复制操作的主函数
 # 参数列表：
 # script_name (str): 脚本名称，用于日志记录
@@ -101,7 +150,8 @@ async def run(script_name, params):
 
         # 创建一个新的事件循环来处理文件操作
         result = await upload(**params)
-
+        print("\n 你可能需要使用命令：\n cp -r kaikei/html_11/* /var/www/html/ \n")
+        await connect_ssh_cmd()
         return result
 
     except Exception as e:
@@ -113,6 +163,7 @@ if __name__ == "__main__":
 
     local_base = "E:/WorkSpace/WebKaisyu/"
     remote_base = "/home/ubuntu/kaikei/"
-    target_folder = "html_1104_11"
+    target_folder = "html_1112"
 
     upload(local_base, remote_base, target_folder)
+    connect_ssh_cmd()

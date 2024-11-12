@@ -129,6 +129,7 @@ def setup_logger(logger_name="app"):
     logging.Logger: 配置好的日志记录器
     """
     logger = logging.getLogger(logger_name)
+
     if not logger.hasHandlers():
         logger.setLevel(logging.INFO)
         console_handler = logging.StreamHandler()
