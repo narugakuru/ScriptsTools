@@ -23,6 +23,7 @@ logger_info = {
 }
 print(f"{current_file_name}文件的Logger 信息: {logger_info}")
 
+
 def create_ssh_client(server, user, password):
 
     client = paramiko.SSHClient()
@@ -65,8 +66,46 @@ async def upload_directory(local_folder, remote_base, ssh_client):
         raise
 
 
+async def connect_ssh_cmd():
+    # 创建SSH连接命令
+    ssh_command = f"ssh {username}@{hostname}"
+    # 创建一个新的CMD窗口并执行SSH命令
+    process = subprocess.Popen(
+        ["start", "cmd", "/k", ssh_command],
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    # 等待一段时间确保窗口打开
+    time.sleep(2)
+    # 模拟键盘输入密码
+    subprocess.run(
+        [
+            "powershell",
+            "-Command",
+            'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("STIDTI2024{ENTER}")',
+        ]
+    )  # 直接运行命令，无需调用wait方法
+    # 模拟输入su命令
+    subprocess.run(
+        [
+            "powershell",
+            "-Command",
+            'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("su{ENTER}")',
+        ]
+    )  # 直接运行命令，无需调用wait方法
+    # 模拟输入su密码
+    subprocess.run(
+        [
+            "powershell",
+            "-Command",
+            f'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("{password}{{ENTER}}")',
+        ]
+    )  # 直接运行命令，无需调用wait方法
+
+
 @format_and_print_params
-async def upload(local_base, remote_base, target_folder):
+async def upload(local_base, remote_base, target_folder, ssh_connect=True):
 
     local_folder = os.path.join(local_base, target_folder)
     ssh_client = None
@@ -76,6 +115,12 @@ async def upload(local_base, remote_base, target_folder):
         await asyncio.sleep(0.01)
         # 上传本地目录
         await upload_directory(local_folder, remote_base, ssh_client)
+        # ssh连接服务器
+        if ssh_connect:
+            await connect_ssh_cmd()
+            print(
+                f"\n 你可能需要使用命令：\n cp -r kaikei/{target_folder}/* /var/www/html/ \n"
+            )
 
         return True
 
@@ -86,54 +131,6 @@ async def upload(local_base, remote_base, target_folder):
         if ssh_client:
             ssh_client.close()
             logger.info("SSH 连接已关闭")
-
-
-async def connect_ssh_cmd():
-    # 创建SSH连接命令
-    ssh_command = f"ssh {username}@{hostname}"
-
-    # 创建一个新的CMD窗口并执行SSH命令
-    process = subprocess.Popen(
-        ["start", "cmd", "/k", ssh_command],
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-
-    # 等待一段时间确保窗口打开
-    time.sleep(2)
-
-    # 模拟键盘输入密码
-    subprocess.run(
-        [
-            "powershell",
-            "-Command",
-            'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("STIDTI2024{ENTER}")',
-        ]
-    )
-
-    # 等待密码输入完成
-    time.sleep(1)
-
-    # 模拟输入su命令
-    subprocess.run(
-        [
-            "powershell",
-            "-Command",
-            'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("su{ENTER}")',
-        ]
-    )
-
-    time.sleep(1)
-
-    # 模拟输入su密码
-    subprocess.run(
-        [
-            "powershell",
-            "-Command",
-            f'Add-Type -AssemblyName System.Windows.Forms;[System.Windows.Forms.SendKeys]::SendWait("{password}{{ENTER}}")',
-        ]
-    )
 
 
 # 函数功能：运行复制操作的主函数
@@ -150,8 +147,7 @@ async def run(script_name, params):
 
         # 创建一个新的事件循环来处理文件操作
         result = await upload(**params)
-        print("\n 你可能需要使用命令：\n cp -r kaikei/html_11/* /var/www/html/ \n")
-        await connect_ssh_cmd()
+
         return result
 
     except Exception as e:

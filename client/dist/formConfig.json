@@ -1,0 +1,106 @@
+{
+    "script_list": {
+        "copy_list": {
+            "form_fields": [
+                {
+                    "label": "源文件夹路径",
+                    "model": "origin_path",
+                    "type": "input",
+                    "placeholder": "请输入源文件夹路径",
+                    "default": "E:/WorkSpace/WebKaisyu/ssl-htdocs-local"
+                },
+                {
+                    "label": "目标文件夹路径",
+                    "model": "copy_path",
+                    "type": "input",
+                    "placeholder": "请输入目标文件夹路径",
+                    "default": "E:/WorkSpace/WebKaisyu/html_11"
+                },
+                {
+                    "label": "文件列表",
+                    "model": "file_list",
+                    "type": "textarea",
+                    "placeholder": "请输入文件列表，每行一个文件路径",
+                    "rows": 10,
+                    "default": "english/jbaudit/bureau.html\nenglish/jbaudit/chapter1.html\nenglish/jbaudit/chapter2.html\nenglish/jbaudit/chapter3.html\nenglish/jbaudit/commission.html\nenglish/jbaudit/coverage.html\nenglish/jbaudit/history.html\nenglish/jbaudit/index.html\nenglish/jbaudit/law.html\nenglish/jbaudit/objective.html\nenglish/jbaudit/organization.html\nenglish/jbaudit/status.html"
+                }
+            ]
+        },
+        "upload": {
+            "form_fields": [
+                {
+                    "label": "本地基础路径",
+                    "model": "local_base",
+                    "type": "input",
+                    "placeholder": "请输入本地基础路径",
+                    "default": "E:/WorkSpace/WebKaisyu/"
+                },
+                {
+                    "label": "远程基础路径",
+                    "model": "remote_base",
+                    "type": "input",
+                    "placeholder": "请输入远程基础路径",
+                    "default": "/home/ubuntu/kaikei/"
+                },
+                {
+                    "label": "目标文件夹",
+                    "model": "target_folder",
+                    "type": "input",
+                    "placeholder": "请输入目标文件夹",
+                    "default": "html_1104_11"
+                },
+                {
+                    "label": "连接服务器终端",
+                    "model": "ssh_connect",
+                    "type": "checkbox",
+                    "default": true
+                }
+            ]
+        },
+        "copy_folder": {
+            "form_fields": [
+                {
+                    "label": "源文件夹路径",
+                    "model": "origin_path",
+                    "type": "input",
+                    "placeholder": "请输入源文件夹路径",
+                    "default": "Z:/ssl-htdocs"
+                },
+                {
+                    "label": "目标文件夹路径",
+                    "model": "copy_path",
+                    "type": "input",
+                    "placeholder": "请输入目标文件夹路径",
+                    "default": "E:/WorkSpace/WebKaisyu/ssl-htdocs-local"
+                },
+                {
+                    "label": "排除的文件扩展名",
+                    "model": "exclude_exts",
+                    "type": "input",
+                    "placeholder": "请输入排除的文件扩展名，多个扩展名用逗号分隔",
+                    "default": "pdf"
+                },
+                {
+                    "label": "排除的文件夹",
+                    "model": "exclude_dirs",
+                    "type": "input",
+                    "placeholder": "请输入排除的文件夹，多个文件夹用逗号分隔",
+                    "default": ".git,pdf,xls"
+                },
+                {
+                    "label": "包含的文件夹",
+                    "model": "include_dirs",
+                    "type": "input",
+                    "placeholder": "请输入包含的文件夹，多个文件夹用逗号分隔",
+                    "default": ""
+                },
+                {
+                    "label": "是否复制所有文件",
+                    "model": "all_copy",
+                    "type": "checkbox",
+                    "default": false
+                }
+            ]
+        }
+    }
+}

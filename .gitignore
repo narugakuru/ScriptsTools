@@ -1,5 +1,6 @@
 # 环境
 server/scripts/env.py
+-client/dist/formConfig.json
 
 # FLuent
 app.build

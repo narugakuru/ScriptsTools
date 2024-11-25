@@ -95,18 +95,33 @@ export default {
             const componentMap = {
                 input: 'el-input',
                 textarea: 'el-input',
+                checkbox: 'el-checkbox',
+                select: 'el-select',
+                radio: 'el-radio-group',
+                date: 'el-date-picker',
                 // 你可以根据需要添加更多组件类型
             };
             return componentMap[type] || 'el-input';
+
         },
         getComponentProps(field) {
-            const props = { placeholder: field.placeholder };
-            if (field.type === 'textarea') {
-                props.type = 'textarea';
-                props.rows = field.rows || 5;
-            }
-            return props;
-        },
+           const props = { placeholder: field.placeholder };
+           if (field.type === 'textarea') {
+               props.type = 'textarea';
+               props.rows = field.rows || 5;
+           } else if (field.type === 'checkbox') {
+               props.label = field.label;
+               props.checked = field.default;  // 添加 checked 属性
+           } else if (field.type === 'select') {
+               props.options = field.options || [];
+           } else if (field.type === 'radio') {
+               props.options = field.options || [];
+           } else if (field.type === 'date') {
+               props.type = 'date';
+               props.format = field.format || 'yyyy-MM-dd';
+           }
+           return props;
+       },
         async executeTask() {
             this.isRunning = true;
             try {
