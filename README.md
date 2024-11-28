@@ -41,3 +41,14 @@
 ├── server.py                  # 服务器启动文件
 └── start_app.bat             # 启动脚本
 ```
+
+# App
+
+![image-20241128172909554](https://cdn.jsdelivr.net/gh/narugakuru/images@master/img/image-20241128172909554.png)
+
+根据json来生成对应的界面，编写json管理脚本参数传入和UI生成
+
+![image-20241128172940481](https://cdn.jsdelivr.net/gh/narugakuru/images@master/img/image-20241128172940481.png)
+
+![image-20241128173409378](https://cdn.jsdelivr.net/gh/narugakuru/images@master/img/image-20241128173409378.png)
+
