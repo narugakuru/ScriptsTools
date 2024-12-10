@@ -1,0 +1,2 @@
+# 使用CRLF换行符的bat文件
+*.bat text eol=crlf

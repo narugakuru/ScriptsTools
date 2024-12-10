@@ -2,6 +2,11 @@
 server/scripts/env.py
 -client/dist/formConfig.json
 
+#暂时
+# auto_michecker.py
+resource/image
+resource/
+
 # FLuent
 app.build
 app.dist
