@@ -1,24 +1,15 @@
+import distutils
 import os
 import shutil
 import logging
 from datetime import datetime
 from server.utils.printer_wrapper import format_and_print_params
 from tqdm.asyncio import tqdm as async_tqdm
+from server.utils.app_logger import logger_init_print
 import asyncio
 
 global logger
-# 获取当前文件的名词
-current_file_name = __name__.split(".")[-1]
-logger = logging.getLogger(current_file_name)
-
-logger_info = {
-    "name": logger.name,
-    "level": logger.level,
-    "handlers": [handler.__class__.__name__ for handler in logger.handlers],
-    "propagate": logger.propagate,
-}
-print(f"{current_file_name}文件的Logger 信息: {logger_info}")
-
+logger = logger_init_print(__name__)
 
 # 通用文件复制逻辑
 async def copy_files(
@@ -43,7 +34,7 @@ async def copy_files(
     all_copy: bool，是否强制复制所有文件（即使它们已经存在）。
     filter_func: function，用于过滤文件夹的自定义函数。
     """
-    logger = logging.getLogger(__name__)
+
     # 使用 async_tqdm 代替 tqdm
     traversal_pbar = async_tqdm(desc="Traversing Files", unit="files", position=0)
     processing_pbar = async_tqdm(desc="Processing Files", unit="files", position=1)
@@ -186,28 +177,19 @@ async def copy_folders(
     """
 
     try:
-        logger = logging.getLogger(__name__)
         # 设置日志输出到文件和控制台，并实时刷新日志文件
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")  # 获取当前日期时间
         log_file_path = (
             f"{copy_path}/copy_folder_{current_time}.log"  # 更新日志文件路径
         )
         fileHandler = logging.FileHandler(log_file_path, mode="a", encoding="utf-8")
+        fileHandler.setLevel(logging.INFO)  # 设置日志级别
+        fileHandler.setFormatter(
+            logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        )  # 设置日志格式
+        # 确保日志实时刷新
+        fileHandler.flush = lambda: None
         logger.addHandler(fileHandler)
-
-        # 启动异步任务定期更新日志文件
-        async def update_log_file():
-            while True:
-                await asyncio.sleep(10)  # 每10秒更新一次
-                current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-                log_file_path = f"{copy_path}/copy_folder_{current_time}.log"
-                fileHandler = logging.FileHandler(
-                    log_file_path, mode="a", encoding="utf-8"
-                )
-                logger.addHandler(fileHandler)
-                logger.info("日志文件已更新")
-
-        asyncio.create_task(update_log_file())  # 创建异步任务
 
         if exclude_dirs:  # exclude_dirs 是空列表，也会进入 else 分支
             # 使用排除目录方式

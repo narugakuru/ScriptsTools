@@ -5,20 +5,10 @@ import logging
 # from  server.utils.app_logger import *
 from server.utils.printer_wrapper import format_and_print_params
 import asyncio
-
+from server.utils.app_logger import logger_init_print
 
 global logger
-# 获取当前文件的名词
-current_file_name = __name__.split(".")[-1]
-logger = logging.getLogger(current_file_name)
-
-logger_info = {
-    "name": logger.name,
-    "level": logger.level,
-    "handlers": [handler.__class__.__name__ for handler in logger.handlers],
-    "propagate": logger.propagate,
-}
-print(f"{current_file_name}文件的Logger 信息: {logger_info}")
+logger = logger_init_print(__name__)
 
 
 # 函数功能：标准化文件路径

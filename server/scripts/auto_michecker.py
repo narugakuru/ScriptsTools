@@ -33,6 +33,7 @@ def setup_logger(logger_name="miChecker"):
     logging.Logger: 配置好的日志记录器
     """
     logger = logging.getLogger(logger_name)
+    log_path = r"E:\CodeAchieve\MyFluent\itTools-fastapi\michecker.log"
 
     if not logger.hasHandlers():
         logger.setLevel(logging.INFO)
@@ -47,7 +48,7 @@ def setup_logger(logger_name="miChecker"):
 
         # Global file handler for persistent logs
         file_handler = TimedRotatingFileHandler(
-            f"{logger_name}.log",
+            log_path,
             when="midnight",
             interval=1,
             backupCount=7,
@@ -59,8 +60,10 @@ def setup_logger(logger_name="miChecker"):
         )
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
+        print("logger setup successfully")
     return logger
 
+logger = setup_logger()
 
 def wait_for_image(image_name, timeout=TIME_OUT, confidence=CONFIFDENCE, region=None):
     """
@@ -105,9 +108,10 @@ def click_icon(image_path, timeout=TIME_OUT, confidence=CONFIFDENCE, region=None
     if location:
         pyautogui.click(location)
         logger.info(f"已点击{image_path}按钮")
+        return True
     else:
         logger.info(f"未找到{image_path}按钮")
-        return
+        return False
 
 
 def perform_task_for_link(link):
@@ -134,21 +138,31 @@ def perform_task_for_link(link):
     pyautogui.press("enter")
     logger.info(f"已输入链接：{link}")
 
-    # 防止弹出iframe
-    click_icon("ok.png", timeout=2, region=(500, 400, 2560, 1500))
+    time.sleep(SLEEP)
 
-    time.sleep(SLEEP)
     # 点击視覚化按钮
-    click_icon("visual.png", region=(2000, 0, 2560, 300))
-    time.sleep(SLEEP)
+    click_icon("visual.png", timeout=4, region=(2000, 0, 2560, 300))
+
+    # time.sleep(SLEEP)
+
+    # 防止弹出iframe
+    click_icon("cancel.png", timeout=4)
 
     # 会計検査院 Board of Audit of Japan
     wait_for_image(
         "search.png",
         timeout=TIME_OUT / 2,
         confidence=0.5,
-        # region=(X / 2, 0, X, Y / 2),  # 最右边一小块
     )
+
+    # 检查有无报错，此时已经等待报告加载完毕，不需要再等待
+    err = wait_for_image(
+        "star.png",
+        timeout=2,
+    )
+
+    if err:
+        logger.info("当前网页存在报错！！！！！！！！")
 
     # 等待并点击“保存”按钮
     click_icon("save.png", region=(2000, 0, 2560, 300))
@@ -170,7 +184,7 @@ def main():
     # 定义网页链接列表
     links = read_txt()
 
-    index = 42
+    index = 124
 
     for link in links[index:]:
         index += 1
@@ -190,14 +204,11 @@ def read_txt():
         links = [line for line in file.read().splitlines()]
 
     # 打印结果
-    logger.info(links)
+    # logger.info(links)
 
     return links
 
-
-logger = setup_logger()
-
+# E:/Environment/anaconda3/envs/fast/python.exe e:/CodeAchieve/MyFluent/itTools-fastapi/server/scripts/auto_michecker.py
 if __name__ == "__main__":
     main()
     # read_txt()
-    # E:/Environment/anaconda3/envs/fast/python.exe e:/CodeAchieve/MyFluent/itTools-fastapi/server/scripts/auto_michecker.py

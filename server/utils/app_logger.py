@@ -181,3 +181,23 @@ def setup_stream_logger(logger_name="stream"):
         print(f"====== 初始化日志Handler:  {logger_name} =======")
 
     return logger
+
+
+def logger_init_print(file_name, print_info=True):
+    """
+    初始化并且打印日志信息
+    """
+    # 获取当前文件的名词
+    current_file_name = file_name.split(".")[-1]
+    logger = logging.getLogger(current_file_name)
+
+    if print_info:
+        logger_info = {
+            "name": logger.name,
+            "level": logger.level,
+            "handlers": [handler.__class__.__name__ for handler in logger.handlers],
+            "propagate": logger.propagate,
+        }
+        print(f"{current_file_name}文件的Logger 信息: {logger_info}")
+
+    return logger
